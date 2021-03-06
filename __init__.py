@@ -78,10 +78,6 @@ class TEXT_OT_text_to_strip(Operator):
     def execute(self, context):
         st = context.space_data
         text = st.text.as_string()
-        name = st.text.name
-        old_line = bpy.context.space_data.text.current_line_index
-        trimmed = ""
-        instance = 0
         lines = str(text).splitlines()
         chan = find_completely_empty_channel()
 
