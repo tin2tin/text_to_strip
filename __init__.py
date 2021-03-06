@@ -31,11 +31,10 @@ bl_info = {
 
 
 import bpy
-import re
 from bpy.types import Operator
 from bpy.props import (
-    BoolProperty,
     EnumProperty,
+    IntProperty
 )
 
 
@@ -71,9 +70,20 @@ class TEXT_OT_text_to_strip(Operator):
         default={"LINES"},
     )
 
+    font_size: IntProperty(
+        name="Font Size",
+        default=40,
+        min=0,
+        max=2000,
+        soft_min=1
+    )
+
     @classmethod
     def poll(cls, context):
         return context.area.type == "TEXT_EDITOR" and context.space_data.text
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
 
     def execute(self, context):
         st = context.space_data
@@ -99,7 +109,7 @@ class TEXT_OT_text_to_strip(Operator):
             text_strip.align_y = "CENTER"
             text_strip.align_x = "LEFT"
             text_strip.wrap_width = 0.68
-            text_strip.font_size = 40
+            text_strip.font_size = self.font_size
         if self.type_ == {"LINES"}:
             pos = 0
             for i in range(len(lines)):
@@ -116,13 +126,14 @@ class TEXT_OT_text_to_strip(Operator):
                 text_strip.align_y = "BOTTOM"
                 text_strip.align_x = "LEFT"
                 text_strip.wrap_width = 0.68
-                text_strip.font_size = 40
+                text_strip.font_size = self.font_size
                 pos += 100
         return {"FINISHED"}
 
 
 def menu_text_to_strip(self, context):
-    self.layout.operator_menu_enum("text.text_to_strip", "type_")
+    self.layout.operator_context = 'INVOKE_DEFAULT'
+    self.layout.operator("text.text_to_strip")
 
 
 def register():
