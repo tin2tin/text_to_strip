@@ -60,7 +60,7 @@ class TEXT_OT_text_to_strip(Operator):
     bl_label = "Text to Strip"
     bl_options = {"REGISTER", "UNDO"}
 
-    type: EnumProperty(
+    type_: EnumProperty(
         name="Text to Strip",
         description="Sends line or full text to text strip",
         options={"ENUM_FLAG"},
@@ -89,7 +89,7 @@ class TEXT_OT_text_to_strip(Operator):
         cf = scn.frame_current
         context = bpy.context
 
-        if self.type == {"FULL_TEXT"}:
+        if self.type_ == {"FULL_TEXT"}:
             text_strip = bpy.context.scene.sequence_editor.sequences.new_effect(
                 name="Text Edit",
                 type="TEXT",
@@ -104,7 +104,7 @@ class TEXT_OT_text_to_strip(Operator):
             text_strip.align_x = "LEFT"
             text_strip.wrap_width = 0.68
             text_strip.font_size = 40
-        if self.type == {"LINES"}:
+        if self.type_ == {"LINES"}:
             pos = 0
             for i in range(len(lines)):
                 text_strip = bpy.context.scene.sequence_editor.sequences.new_effect(
@@ -126,7 +126,7 @@ class TEXT_OT_text_to_strip(Operator):
 
 
 def menu_text_to_strip(self, context):
-    self.layout.operator_menu_enum("text.text_to_strip", "type")
+    self.layout.operator_menu_enum("text.text_to_strip", "type_")
 
 
 def register():
