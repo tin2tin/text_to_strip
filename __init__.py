@@ -16,41 +16,25 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-
-bl_info = {
-    "name": "text to Strips",
-    "author": "Tintwotin",
-    "version": (0, 2),
-    "blender": (2, 80, 0),
-    "location": "Text Editor Edit Menu",
-    "description": "Converts lines or full text to one or more Text strips",
-    "warning": "",
-    "wiki_url": "",
-    "category": "Text Editor",
-}
-
+# <pep8-80 compliant>
 
 import bpy
 import re
 from bpy.types import Operator
-from bpy.props import (
-    BoolProperty,
-    EnumProperty,
-)
+from bpy.props import EnumProperty
 
 
-def find_completely_empty_channel():
+def find_empty_channel():
     if not bpy.context.scene.sequence_editor:
         bpy.context.scene.sequence_editor_create()
     sequences = bpy.context.sequences
     if not sequences:
-        addSceneChannel = 1
+        empty_channel = 1
     else:
         channels = [s.channel for s in sequences]
         channels = sorted(list(set(channels)))
         empty_channel = channels[-1] + 1
-        addSceneChannel = empty_channel
-    return addSceneChannel
+    return empty_channel
 
 
 class TEXT_OT_text_to_strip(Operator):
@@ -67,8 +51,9 @@ class TEXT_OT_text_to_strip(Operator):
         items=(
             ("FULL_TEXT", "One Strip", "Full text to one Text strip"),
             ("LINES", "One Strip per Line", "Text lines to Text strips"),
+            ("PARAGRAPH", "One Strip per Paragraph", "Paragraphs to Text strips"),
         ),
-        default={"LINES"},
+        default={"FULL_TEXT"},
     )
 
     @classmethod
@@ -77,17 +62,15 @@ class TEXT_OT_text_to_strip(Operator):
 
     def execute(self, context):
         st = context.space_data
-        text = st.text.as_string()
-        name = st.text.name
-        old_line = bpy.context.space_data.text.current_line_index
-        trimmed = ""
-        instance = 0
-        lines = str(text).splitlines()
-        chan = find_completely_empty_channel()
-
+        chan = find_empty_channel()
         scn = bpy.context.scene
         cf = scn.frame_current
         context = bpy.context
+        text = st.text.as_string()
+        if self.type == {"PARAGRAPH"}:
+            lines = str(text).split('\n\n')
+        else:
+            lines = str(text).splitlines()
 
         if self.type == {"FULL_TEXT"}:
             text_strip = bpy.context.scene.sequence_editor.sequences.new_effect(
@@ -104,24 +87,27 @@ class TEXT_OT_text_to_strip(Operator):
             text_strip.align_x = "LEFT"
             text_strip.wrap_width = 0.68
             text_strip.font_size = 40
-        if self.type == {"LINES"}:
+        else:
             pos = 0
             for i in range(len(lines)):
-                text_strip = bpy.context.scene.sequence_editor.sequences.new_effect(
-                    name="Text Edit",
-                    type="TEXT",
-                    frame_start=pos,
-                    frame_end=pos + 100,
-                    channel=chan,
-                )
-                text_strip.text = lines[i].replace("  ", "")
-                text_strip.location[1] = 0.1
-                text_strip.location[0] = 0.2
-                text_strip.align_y = "BOTTOM"
-                text_strip.align_x = "LEFT"
-                text_strip.wrap_width = 0.68
-                text_strip.font_size = 40
-                pos += 100
+                if lines[i] =="":
+                    pos += 100
+                else:
+                    text_strip = bpy.context.scene.sequence_editor.sequences.new_effect(
+                        name="Text Edit",
+                        type="TEXT",
+                        frame_start=pos,
+                        frame_end=pos + 100,
+                        channel=chan,
+                    )
+                    text_strip.text = lines[i]
+                    text_strip.location[1] = 0.1
+                    text_strip.location[0] = 0.2
+                    text_strip.align_y = "BOTTOM"
+                    text_strip.align_x = "LEFT"
+                    text_strip.wrap_width = 0.68
+                    text_strip.font_size = 40
+                    pos += 100
         return {"FINISHED"}
 
 
