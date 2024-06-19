@@ -18,6 +18,20 @@
 
 # <pep8-80 compliant>
 
+bl_info = {
+    "name": "Text to Strip",
+    "blender": (2, 80, 0),
+    "category": "Text Editor",
+    "version": (1, 0, 0),
+    "author": "Tintwotin",
+    "description": "Converts text or text lines to text strips in the VSE",
+    "location": "Text Editor > Edit",
+    "warning": "",
+    "wiki_url": "https://github.com/tin2tin/text_to_strip",
+    "tracker_url": "",
+}
+
+
 import bpy
 import re
 from bpy.types import Operator
