@@ -20,7 +20,7 @@
 
 bl_info = {
     "name": "Text to Strip",
-    "blender": (2, 80, 0),
+    "blender": (4, 4, 0),
     "category": "Text Editor",
     "version": (1, 0, 0),
     "author": "Tintwotin",
