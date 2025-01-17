@@ -95,12 +95,14 @@ class TEXT_OT_text_to_strip(Operator):
                 channel=chan,
             )
             text_strip.text = text
-            text_strip.location[1] = 0.5
-            text_strip.location[0] = 0.2
-            text_strip.align_y = "CENTER"
-            text_strip.align_x = "LEFT"
+            text_strip.location[1] = 0.05
+            text_strip.location[0] = 0.5
+            text_strip.anchor_y = "BOTTOM"
+            text_strip.anchor_x = "LEFT"
+            text_strip.alignment_x = "LEFT"
             text_strip.wrap_width = 0.68
-            text_strip.font_size = 40
+            text_strip.font_size = 30
+            text_strip.use_outline = True
         else:
             pos = 0
             for i in range(len(lines)):
@@ -110,17 +112,18 @@ class TEXT_OT_text_to_strip(Operator):
                     text_strip = bpy.context.scene.sequence_editor.sequences.new_effect(
                         name="Text Edit",
                         type="TEXT",
-                        frame_start=pos,
-                        frame_end=pos + 100,
+                        frame_start=cf + pos,
+                        frame_end=cf + pos + 100,
                         channel=chan,
                     )
                     text_strip.text = lines[i]
-                    text_strip.location[1] = 0.1
-                    text_strip.location[0] = 0.2
-                    text_strip.align_y = "BOTTOM"
-                    text_strip.align_x = "LEFT"
+                    text_strip.location[1] = 0.05
+                    text_strip.location[0] = 0.5
+                    text_strip.anchor_y = "BOTTOM"
+                    text_strip.alignment_x = "LEFT"
                     text_strip.wrap_width = 0.68
-                    text_strip.font_size = 40
+                    text_strip.font_size = 30
+                    text_strip.use_outline = True
                     pos += 100
         return {"FINISHED"}
 
