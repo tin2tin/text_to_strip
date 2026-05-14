@@ -20,7 +20,7 @@
 
 bl_info = {
     "name": "Text to Strip",
-    "blender": (4, 4, 0),
+    "blender": (5, 1, 0),
     "category": "Text Editor",
     "version": (1, 0, 0),
     "author": "Tintwotin",
@@ -39,13 +39,13 @@ from bpy.props import EnumProperty
 
 
 def find_empty_channel():
-    if not bpy.context.scene.sequence_editor:
-        bpy.context.scene.sequence_editor_create()
-    sequences = bpy.context.sequences
-    if not sequences:
+    if not bpy.context.sequencer_scene.sequence_editor:
+        bpy.context.sequencer_scene.sequence_editor_create()
+    strips = bpy.context.strips
+    if not strips:
         empty_channel = 1
     else:
-        channels = [s.channel for s in sequences]
+        channels = [s.channel for s in strips]
         channels = sorted(list(set(channels)))
         empty_channel = channels[-1] + 1
     return empty_channel
@@ -77,7 +77,7 @@ class TEXT_OT_text_to_strip(Operator):
     def execute(self, context):
         st = context.space_data
         chan = find_empty_channel()
-        scn = bpy.context.scene
+        scn = bpy.context.sequencer_scene
         cf = scn.frame_current
         context = bpy.context
         text = st.text.as_string()
@@ -87,43 +87,40 @@ class TEXT_OT_text_to_strip(Operator):
             lines = str(text).splitlines()
 
         if self.type == {"FULL_TEXT"}:
-            text_strip = bpy.context.scene.sequence_editor.sequences.new_effect(
+            text_strip = bpy.context.sequencer_scene.sequence_editor.strips.new_effect(
                 name="Text Edit",
                 type="TEXT",
                 frame_start=cf,
-                frame_end=cf + 100,
+                length=100,
                 channel=chan,
             )
             text_strip.text = text
-            text_strip.location[1] = 0.05
-            text_strip.location[0] = 0.5
-            text_strip.anchor_y = "BOTTOM"
+            text_strip.location[1] = 0.5
+            text_strip.location[0] = 0.2
+            text_strip.anchor_y = "CENTER"
             text_strip.anchor_x = "LEFT"
-            text_strip.alignment_x = "LEFT"
             text_strip.wrap_width = 0.68
-            text_strip.font_size = 30
-            text_strip.use_outline = True
+            text_strip.font_size = 40
         else:
             pos = 0
             for i in range(len(lines)):
                 if lines[i] =="":
                     pos += 100
                 else:
-                    text_strip = bpy.context.scene.sequence_editor.sequences.new_effect(
+                    text_strip = bpy.context.sequencer_scene.sequence_editor.strips.new_effect(
                         name="Text Edit",
                         type="TEXT",
-                        frame_start=cf + pos,
-                        frame_end=cf + pos + 100,
+                        frame_start=pos,
+                        length=100,
                         channel=chan,
                     )
                     text_strip.text = lines[i]
-                    text_strip.location[1] = 0.05
-                    text_strip.location[0] = 0.5
+                    text_strip.location[1] = 0.1
+                    text_strip.location[0] = 0.2
                     text_strip.anchor_y = "BOTTOM"
-                    text_strip.alignment_x = "LEFT"
+                    text_strip.anchor_x = "LEFT"
                     text_strip.wrap_width = 0.68
-                    text_strip.font_size = 30
-                    text_strip.use_outline = True
+                    text_strip.font_size = 40
                     pos += 100
         return {"FINISHED"}
 
